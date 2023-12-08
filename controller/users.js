@@ -155,12 +155,12 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
 
 export const allUserNotification = asyncHandler(async (req, res, next) => {
   const users = await User.find().lean();
-  const { data, body } = req.body;
+  const { data, body, title } = req.body;
 
   users.map(async (user) => {
     const { expoPushToken } = user;
     if (expoPushToken) {
-      await sendAllUserNotification(expoPushToken, data, body);
+      await sendAllUserNotification(expoPushToken, data, title, body);
     }
   });
   res.status(200).json({
