@@ -30,7 +30,7 @@ export const register = asyncHandler(async (req, res, next) => {
 
 // логин хийнэ
 export const login = asyncHandler(async (req, res, next) => {
-  const { phone, password } = req.body;
+  const { phone, password, expoPushToken } = req.body;
 
   // Оролтыгоо шалгана
 
@@ -51,6 +51,8 @@ export const login = asyncHandler(async (req, res, next) => {
     throw new MyError("Утас болон нууц үгээ зөв оруулна уу", 401);
   }
 
+  user.expoPushToken = expoPushToken;
+  user.save();
   const token = user.getJsonWebToken();
 
   const cookieOption = {
