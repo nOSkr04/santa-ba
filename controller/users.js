@@ -3,6 +3,8 @@ import MyError from "../utils/myError.js";
 import asyncHandler from "express-async-handler";
 import paginate from "../utils/paginate.js";
 import sendAllUserNotification from "../utils/sendAllUserNotification.js";
+import Wallet from "../models/Wallet.js";
+import sendNotification from "../utils/sendNotification.js";
 
 export const authMeUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.userId);
@@ -166,5 +168,121 @@ export const allUserNotification = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     data: "success",
+  });
+});
+
+export const invoiceTime = asyncHandler(async (req, res, next) => {
+  const profile = await User.findById(req.params.id);
+  await axios({
+    method: "post",
+    url: "https://merchant.qpay.mn/v2/auth/token",
+    headers: {
+      Authorization: `Basic U0VEVTowYjRrNDJsRA==`,
+    },
+  })
+    .then((response) => {
+      const token = response.data.access_token;
+
+      axios({
+        method: "post",
+        url: "https://merchant.qpay.mn/v2/invoice",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          invoice_code: "SEDU_INVOICE",
+          sender_invoice_no: "12345678",
+          invoice_receiver_code: `${profile.name}`,
+          invoice_description: `Santa egg ${profile.name}`,
+
+          amount: req.body.amount,
+          callback_url: `https://neuronsolution.info/users/callbacks/${req.params.id}/${req.body.amount}`,
+        },
+      })
+        .then(async (response) => {
+          req.body.urls = response.data.urls;
+          req.body.qrImage = response.data.qr_image;
+          req.body.invoiceId = response.data.invoice_id;
+          const wallet = await Wallet.create(req.body);
+          profile.invoiceId = wallet._id;
+          profile.save();
+          res.status(200).json({
+            success: true,
+            data: wallet._id,
+          });
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
+    })
+    .catch((error) => {
+      console.log(error.response.data);
+    });
+});
+
+export const invoiceCheck = asyncHandler(async (req, res) => {
+  await axios({
+    method: "post",
+    url: "https://merchant.qpay.mn/v2/auth/token",
+    headers: {
+      Authorization: `Basic U0VEVTowYjRrNDJsRA==`,
+    },
+  })
+    .then((response) => {
+      const token = response.data.access_token;
+      axios({
+        method: "post",
+        url: "https://merchant.qpay.mn/v2/payment/check",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          object_type: "INVOICE",
+          object_id: req.params.id,
+          page_number: 1,
+          page_limit: 100,
+          callback_url: `https://neuronsolution.info/users/check/challbacks/${req.params.id}/${req.params.numId}`,
+        },
+      })
+        .then(async (response) => {
+          const profile = await User.findById(req.params.numId);
+          const count = response.data.count;
+          if (count === 0) {
+            res.status(401).json({
+              success: false,
+            });
+          } else {
+            const eggCount = parseInt(req.params.numId, 10);
+            profile.eggCount = profile.eggCount + eggCount;
+            profile.save();
+            await sendNotification(
+              profile.expoPushToken,
+              `${eggCount} өндөг амжилттай авлаа`
+            );
+            res.status(200).json({
+              success: true,
+              data: profile,
+            });
+          }
+        })
+        .catch((error) => {
+          // console.log(error, "error");
+          console.log("err==================");
+        });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
+export const chargeTime = asyncHandler(async (req, res, next) => {
+  const profile = await User.findById(req.params.id);
+  const eggCount = parseInt(req.params.numId, 10);
+  profile.eggCount = profile.eggCount + eggCount;
+  profile.save();
+
+  res.status(200).json({
+    success: true,
+    data: profile,
   });
 });

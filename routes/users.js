@@ -12,6 +12,9 @@ import {
   logout,
   authMeUser,
   allUserNotification,
+  chargeTime,
+  invoiceCheck,
+  invoiceTime,
 } from "../controller/users.js";
 
 const router = Router();
@@ -23,7 +26,9 @@ router.route("/logout").get(logout);
 // router.route("/updatePrivacy").post(updatePrivacy);
 router.route("/notificationAll").post(protect, allUserNotification);
 router.use(protect);
-
+router.route("/callbacks/:id/:numId").get(chargeTime);
+router.route("/check/challbacks/:id/:numId").get(invoiceCheck);
+router.route("/invoice/:id").post(invoiceTime);
 //"/api/v1/users"
 router
   .route("/")
