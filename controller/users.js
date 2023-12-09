@@ -192,9 +192,8 @@ export const invoiceTime = asyncHandler(async (req, res, next) => {
         data: {
           invoice_code: "SEDU_INVOICE",
           sender_invoice_no: "12345678",
-          invoice_receiver_code: `${profile.name}`,
-          invoice_description: `Santa egg ${profile.name}`,
-
+          invoice_receiver_code: `${profile.phone}`,
+          invoice_description: `Santa egg ${profile.phone}`,
           amount: req.body.amount,
           callback_url: `https://neuronsolution.info/users/callbacks/${req.params.id}/${req.body.amount}`,
         },
@@ -252,7 +251,8 @@ export const invoiceCheck = asyncHandler(async (req, res) => {
               success: false,
             });
           } else {
-            const eggCount = parseInt(req.params.numId, 10);
+            const price = parseInt(req.params.numId, 10);
+            const eggCount = price / 100;
             profile.eggCount = profile.eggCount + eggCount;
             profile.save();
             await sendNotification(
@@ -267,7 +267,6 @@ export const invoiceCheck = asyncHandler(async (req, res) => {
         })
         .catch((error) => {
           // console.log(error, "error");
-          console.log("err==================");
         });
     })
     .catch((error) => {
@@ -277,8 +276,16 @@ export const invoiceCheck = asyncHandler(async (req, res) => {
 
 export const chargeTime = asyncHandler(async (req, res, next) => {
   const profile = await User.findById(req.params.id);
-  const eggCount = parseInt(req.params.numId, 10);
+  console.log(profile);
+  const price = parseInt(req.params.numId, 10);
+  const eggCount = price / 100;
   profile.eggCount = profile.eggCount + eggCount;
+  console.log(eggCount, "count");
+  console.log(profile.eggCount, "procount");
+  await sendNotification(
+    profile.expoPushToken,
+    `${eggCount} өндөг амжилттай авлаа`
+  );
   profile.save();
 
   res.status(200).json({
