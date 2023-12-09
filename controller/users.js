@@ -247,18 +247,18 @@ export const invoiceCheck = asyncHandler(async (req, res) => {
           const profile = await User.findById(req.params.numId);
           const count = response.data.count;
           if (count === 0) {
-            res.status(401).json({
+            res.status(402).json({
               success: false,
             });
           } else {
-            const price = parseInt(req.params.numId, 10);
-            const eggCount = price / 100;
-            profile.eggCount = profile.eggCount + eggCount;
-            profile.save();
-            await sendNotification(
-              profile.expoPushToken,
-              `${eggCount} өндөг амжилттай авлаа`
-            );
+            // const price = parseInt(req.params.numId, 10);
+            // const eggCount = price / 100;
+            // profile.eggCount = profile.eggCount + eggCount;
+            // profile.save();
+            // await sendNotification(
+            //   profile.expoPushToken,
+            //   `${eggCount} өндөг амжилттай авлаа`
+            // );
             res.status(200).json({
               success: true,
               data: profile,
