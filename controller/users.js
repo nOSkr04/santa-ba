@@ -276,12 +276,9 @@ export const invoiceCheck = asyncHandler(async (req, res) => {
 
 export const chargeTime = asyncHandler(async (req, res, next) => {
   const profile = await User.findById(req.params.id);
-  console.log(profile);
   const price = parseInt(req.params.numId, 10);
   const eggCount = price / 100;
   profile.eggCount = profile.eggCount + eggCount;
-  console.log(eggCount, "count");
-  console.log(profile.eggCount, "procount");
   await sendNotification(
     profile.expoPushToken,
     `${eggCount} өндөг амжилттай авлаа`
