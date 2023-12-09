@@ -5,7 +5,7 @@ import paginate from "../utils/paginate.js";
 import sendAllUserNotification from "../utils/sendAllUserNotification.js";
 import Wallet from "../models/Wallet.js";
 import sendNotification from "../utils/sendNotification.js";
-
+import axios from "axios";
 export const authMeUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.userId);
   if (!user) {
