@@ -6,6 +6,8 @@ import sendAllUserNotification from "../utils/sendAllUserNotification.js";
 import Wallet from "../models/Wallet.js";
 import sendNotification from "../utils/sendNotification.js";
 import axios from "axios";
+import bcrypt from "bcrypt";
+
 export const authMeUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.userId);
   if (!user) {
@@ -22,10 +24,111 @@ export const register = asyncHandler(async (req, res, next) => {
   const user = await User.create(req.body);
 
   const token = user.getJsonWebToken();
+  user.type = "VERIFY";
+  user.save();
 
   res.status(200).json({
     success: true,
     token,
+    user: user,
+  });
+});
+
+export const registerPhone = asyncHandler(async (req, res) => {
+  const { phone, expoPushToken } = req.body;
+  if (!phone) {
+    throw new MyError("Утасны дугаараа оруулна уу", 400);
+  }
+
+  const user = await User.findOne({ phone });
+
+  if (user) {
+    throw new MyError("Бүртгэлтэй утасны дугаар байна", 400);
+  }
+  const newUser = await User.create({
+    phone,
+    expoPushToken,
+    type: "CHECK_PHONE_REGISTER",
+  });
+  const token = newUser.getJsonWebToken();
+
+  res.status(200).json({
+    success: true,
+    token,
+    user: user,
+  });
+});
+
+export const registerPassword = asyncHandler(async (req, res) => {
+  const { password } = req.body;
+  if (!password) {
+    throw new MyError("Пин кодоо оруулна уу", 400);
+  }
+  const user = await User.findById(req.userId);
+  if (!user) {
+    throw new MyError("Алдаа гарлаа", 400);
+  }
+  const salt = await bcrypt.genSalt(10);
+  const encpassword = await bcrypt.hash(password, salt);
+  user.password = encpassword;
+  user.type = "REGISTER_SUCCESS";
+  user.save();
+  const token = user.getJsonWebToken();
+
+  const cookieOption = {
+    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000000),
+    httpOnly: true,
+  };
+
+  res.status(200).cookie("amazon-token", token, cookieOption).json({
+    success: true,
+    token,
+    user: user,
+  });
+});
+
+export const loginPhone = asyncHandler(async (req, res) => {
+  const { phone, expoPushToken } = req.body;
+
+  if (!phone) {
+    throw new MyError("Утасны дугаараа оруулна уу", 400);
+  }
+  const user = await User.findOne({ phone });
+  if (!user) {
+    throw new MyError("Бүртгэлтэй утасны дугаар олдсонгүй", 400);
+  }
+  user.type = "CHECK_PHONE_LOGIN";
+  user.expoPushToken = expoPushToken;
+  user.save();
+  const token = user.getJsonWebToken();
+
+  const cookieOption = {
+    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000000),
+    httpOnly: true,
+  };
+
+  res.status(200).cookie("amazon-token", token, cookieOption).json({
+    success: true,
+    token,
+    user: user,
+  });
+});
+
+export const loginCheckPassword = asyncHandler(async (req, res) => {
+  const { password } = req.body;
+  const user = await User.findById(req.userId);
+  if (!user) {
+    throw new MyError("Алдаа гарлаа", 400);
+  }
+  const ok = await user.checkPassword(password);
+
+  if (!ok) {
+    throw new MyError("Нууц үг буруу байна", 400);
+  }
+  user.type = "LOGIN_SUCCESS";
+  user.save();
+  res.status(200).json({
+    success: true,
     user: user,
   });
 });
@@ -290,4 +393,21 @@ export const chargeTime = asyncHandler(async (req, res, next) => {
     success: true,
     data: profile,
   });
+});
+
+export const allVoucherGive = asyncHandler(async (req, res, next) => {
+  const users = await User.find();
+  await Promise.all(
+    users.map(async (user) => {
+      // Update isRandom to false for each gift in the user's gifts array
+      await Promise.all(
+        user.gifts.map(async (giftId) => {
+          await Gift.findByIdAndUpdate(giftId, { $set: { isRandom: false } });
+        })
+      );
+
+      // Save the updated user
+      await user.save();
+    })
+  );
 });

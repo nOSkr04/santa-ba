@@ -15,6 +15,10 @@ import {
   chargeTime,
   invoiceCheck,
   invoiceTime,
+  loginCheckPassword,
+  loginPhone,
+  registerPassword,
+  registerPhone,
 } from "../controller/users.js";
 
 const router = Router();
@@ -22,6 +26,10 @@ const router = Router();
 //"/api/v1/users"
 router.route("/register").post(register);
 router.route("/login").post(login);
+router.route("/loginCheckPhone").post(loginPhone);
+router.route("/loginCheckPassword").post(protect, loginCheckPassword);
+router.route("/registerCheckPhone").post(registerPhone);
+router.route("/registerCheckPassword").post(protect, registerPassword);
 router.route("/logout").get(logout);
 router.route("/callbacks/:id/:numId").get(chargeTime);
 router.route("/check/challbacks/:id/:numId").get(invoiceCheck);

@@ -20,6 +20,7 @@ import mediasRoutes from "./routes/media.js";
 import bannerRoutes from "./routes/banner.js";
 import giftRoutes from "./routes/gift.js";
 import walletsRoutes from "./routes/wallets.js";
+import allEggsRoutes from "./routes/wallets.js";
 // Аппын тохиргоог process.env рүү ачаалах
 dotenv.config({ path: "./config/config.env" });
 
@@ -100,6 +101,7 @@ app.use("/banners", bannerRoutes);
 app.use("/gifts", giftRoutes);
 app.use("/media", mediasRoutes);
 app.use("/wallets", walletsRoutes);
+app.use("/allegg", allEggsRoutes);
 
 // Алдаа үүсэхэд барьж авч алдааны мэдээллийг клиент тал руу автоматаар мэдээлнэ
 app.use(errorHandler);

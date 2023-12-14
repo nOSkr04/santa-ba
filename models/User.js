@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: [true, "Утасны дугаараа оруулна уу"],
+    unique: true,
   },
   role: {
     type: String,
@@ -21,13 +22,13 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  type: String,
+  invoiceId: String,
   expoPushToken: String,
   version: String,
   password: {
     type: String,
     minlength: 4,
-    required: [true, "Нууц үгээ оруулна уу"],
-    select: false,
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
