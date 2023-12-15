@@ -43,6 +43,7 @@ router
   .get(authorize("admin"), getUsers)
   .post(authorize("admin"), createUser);
 router.route("/invoice/:id").post(invoiceTime);
+router.route("/delete").delete(protect, deleteUser);
 router.route("/me").get(protect, authMeUser);
 router.route("/:id").get(getUser).put(updateUser).delete(protect, deleteUser);
 

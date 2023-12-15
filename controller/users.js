@@ -67,6 +67,7 @@ export const registerPassword = asyncHandler(async (req, res) => {
     throw new MyError("Алдаа гарлаа", 400);
   }
 
+  user.type = "REGISTER_SUCCESS";
   user.password = password;
 
   user.save();
@@ -241,10 +242,9 @@ export const updateUser = asyncHandler(async (req, res, next) => {
 });
 
 export const deleteUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-
+  const user = await User.findById(req.userId);
   if (!user) {
-    throw new MyError(req.params.id + " ID-тэй хэрэглэгч байхгүйээээ.", 400);
+    throw new MyError(req.params.id + " ID-тэй хэрэглэгч байхгүй.", 400);
   }
 
   user.remove();
