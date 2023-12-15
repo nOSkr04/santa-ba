@@ -6,7 +6,6 @@ import sendAllUserNotification from "../utils/sendAllUserNotification.js";
 import Wallet from "../models/Wallet.js";
 import sendNotification from "../utils/sendNotification.js";
 import axios from "axios";
-import bcrypt from "bcrypt";
 
 export const authMeUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.userId);
@@ -22,7 +21,6 @@ export const authMeUser = asyncHandler(async (req, res) => {
 // register
 export const register = asyncHandler(async (req, res, next) => {
   const user = await User.create(req.body);
-
   const token = user.getJsonWebToken();
   user.type = "VERIFY";
   user.save();
@@ -41,7 +39,6 @@ export const registerPhone = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findOne({ phone });
-
   if (user) {
     throw new MyError("Бүртгэлтэй утасны дугаар байна", 400);
   }
@@ -55,12 +52,13 @@ export const registerPhone = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     token,
-    user: user,
+    user: newUser,
   });
 });
 
 export const registerPassword = asyncHandler(async (req, res) => {
   const { password } = req.body;
+
   if (!password) {
     throw new MyError("Пин кодоо оруулна уу", 400);
   }
@@ -68,11 +66,11 @@ export const registerPassword = asyncHandler(async (req, res) => {
   if (!user) {
     throw new MyError("Алдаа гарлаа", 400);
   }
-  const salt = await bcrypt.genSalt(10);
-  const encpassword = await bcrypt.hash(password, salt);
-  user.password = encpassword;
-  user.type = "REGISTER_SUCCESS";
+
+  user.password = password;
+
   user.save();
+
   const token = user.getJsonWebToken();
 
   const cookieOption = {
@@ -89,7 +87,6 @@ export const registerPassword = asyncHandler(async (req, res) => {
 
 export const loginPhone = asyncHandler(async (req, res) => {
   const { phone, expoPushToken } = req.body;
-
   if (!phone) {
     throw new MyError("Утасны дугаараа оруулна уу", 400);
   }
@@ -347,7 +344,6 @@ export const invoiceCheck = asyncHandler(async (req, res) => {
         },
       })
         .then(async (response) => {
-          console.log(response.data);
           const profile = await User.findById(req.params.numId);
           const count = response.data.count;
           if (count === 0) {
