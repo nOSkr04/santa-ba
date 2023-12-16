@@ -11,7 +11,6 @@ import {
   deleteUser,
   logout,
   authMeUser,
-  allUserNotification,
   chargeTime,
   invoiceCheck,
   invoiceTime,
@@ -34,7 +33,6 @@ router.route("/logout").get(logout);
 router.route("/callbacks/:id/:numId").get(chargeTime);
 router.route("/check/challbacks/:id/:numId").get(invoiceCheck);
 // router.route("/updatePrivacy").post(updatePrivacy);
-router.route("/notificationAll").post(protect, allUserNotification);
 
 router.use(protect);
 //"/api/v1/users"

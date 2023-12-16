@@ -22,6 +22,10 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  notificationCount: {
+    type: Number,
+    default: 0,
+  },
   type: String,
   invoiceId: String,
   expoPushToken: String,
