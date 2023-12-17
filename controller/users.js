@@ -530,7 +530,7 @@ export const chargeGift = asyncHandler(async (req, res, next) => {
       title: `${profile.phone} хэрэглэгчээс танд ${eggCount} өндөг бэлэглэлээ`,
       users: user._id, // Link the notification to the user
     });
-    await User.updateOne({ _id: _id }, { $inc: { notificationCount: 1 } });
+    await User.updateOne({ _id: user._id }, { $inc: { notificationCount: 1 } });
     user.save();
     console.log("done");
   } else {
