@@ -530,6 +530,7 @@ export const chargeGift = asyncHandler(async (req, res, next) => {
       users: user._id, // Link the notification to the user
     });
     await User.updateOne({ _id: user._id }, { $inc: { notificationCount: 1 } });
+    await AllEgg.create({ phone: user.phone });
     user.save();
   } else {
     await GiftUser.create({ phone: phone });
