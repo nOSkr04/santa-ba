@@ -26,7 +26,12 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  giftedUsers: [String],
+  giftedUsers: [
+    {
+      user: String,
+      count: Number,
+    },
+  ],
   type: String,
   invoiceId: String,
   giftInvoice: String,
