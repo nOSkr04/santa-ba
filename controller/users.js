@@ -6,6 +6,7 @@ import Wallet from "../models/Wallet.js";
 import sendNotification from "../utils/sendNotification.js";
 import axios from "axios";
 import GiftUser from "../models/GiftUser.js";
+import Notification from "../models/Notification.js";
 
 export const authMeUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.userId);
@@ -304,6 +305,7 @@ export const invoiceTime = asyncHandler(async (req, res, next) => {
 });
 
 export const invoiceCheck = asyncHandler(async (req, res) => {
+  console.log(req.params, "<><><><><> ggparams <><><><><>");
   await axios({
     method: "post",
     url: "https://merchant.qpay.mn/v2/auth/token",
@@ -361,6 +363,7 @@ export const invoiceCheck = asyncHandler(async (req, res) => {
 });
 
 export const chargeTime = asyncHandler(async (req, res, next) => {
+  console.log(req.params, "amazon params");
   const profile = await User.findById(req.params.id);
   const price = parseInt(req.params.numId, 10);
   const eggCount = price / 100;
@@ -369,6 +372,11 @@ export const chargeTime = asyncHandler(async (req, res, next) => {
     profile.expoPushToken,
     `${eggCount} өндөг амжилттай авлаа`
   );
+  await Notification.create({
+    title,
+    users: _id, // Link the notification to the user
+  });
+  await User.updateOne({ _id: _id }, { $inc: { notificationCount: 1 } });
   profile.save();
 
   res.status(200).json({
@@ -401,127 +409,5 @@ export const sendUserNotification = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     data: result,
-  });
-});
-
-export const giftEgg = asyncHandler(async (req, res, next) => {
-  const profile = await User.findById(req.params.id);
-  console.log(profile);
-  console.log(req.body);
-  const { amount, phone } = req.body;
-  await axios({
-    method: "post",
-    url: "https://merchant.qpay.mn/v2/auth/token",
-    headers: {
-      Authorization: `Basic U0VEVTowYjRrNDJsRA==`,
-    },
-  })
-    .then((response) => {
-      const token = response.data.access_token;
-
-      axios({
-        method: "post",
-        url: "https://merchant.qpay.mn/v2/invoice",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        data: {
-          invoice_code: "SEDU_INVOICE",
-          sender_invoice_no: "12345678",
-          invoice_receiver_code: `${profile.phone}`,
-          invoice_description: `${profile.phone}аас - ${phone} өндөг илгээлээ`,
-          amount: amount,
-          callback_url: `https://neuronsolution.info/users/callbacks/gift/${req.params.id}/${amount}/${phone}`,
-        },
-      })
-        .then(async (response) => {
-          req.body.urls = response.data.urls;
-          req.body.qrImage = response.data.qr_image;
-          req.body.invoiceId = response.data.invoice_id;
-          req.body.isGift = true;
-          const wallet = await Wallet.create(req.body);
-          profile.invoiceId = wallet._id;
-          profile.save();
-          res.status(200).json({
-            success: true,
-            data: wallet._id,
-          });
-        })
-        .catch((error) => {
-          console.log(error.response.data);
-        });
-    })
-    .catch((error) => {
-      console.log(error.response.data);
-    });
-});
-
-export const giftCheck = asyncHandler(async (req, res) => {
-  await axios({
-    method: "post",
-    url: "https://merchant.qpay.mn/v2/auth/token",
-    headers: {
-      Authorization: `Basic U0VEVTowYjRrNDJsRA==`,
-    },
-  })
-    .then((response) => {
-      const token = response.data.access_token;
-      axios({
-        method: "post",
-        url: "https://merchant.qpay.mn/v2/payment/check",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        data: {
-          object_type: "INVOICE",
-          object_id: req.params.id,
-          page_number: 1,
-          page_limit: 100,
-          callback_url: `https://neuronsolution.info/users/check/challbacks/gift/${req.params.id}/${req.params.numId}/${req.params.phone}`,
-        },
-      })
-        .then(async (response) => {
-          const profile = await User.findById(req.params.numId);
-          const count = response.data.count;
-          if (count === 0) {
-            res.status(402).json({
-              success: false,
-            });
-          } else {
-            res.status(200).json({
-              success: true,
-              data: profile,
-            });
-          }
-        })
-        .catch((error) => {
-          // console.log(error, "error");
-        });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-});
-
-export const checkGift = asyncHandler(async (req, res, next) => {
-  const profile = await User.findById(req.params.id);
-  const user = await User.findById(req.params.phone);
-  const price = parseInt(req.params.numId, 10);
-  const eggCount = price / 100;
-  if (!user) {
-    await GiftUser.create({ user: req.params.phone });
-  }
-  user.eggCount = user.eggCount + eggCount;
-  await sendNotification(
-    user.expoPushToken,
-    `${profile.phone}- аас танд ${eggCount} ширхэг өндөг бэлэглэлээ`
-  );
-  user.save();
-  console.log(req.body);
-  console.log(req.params);
-
-  res.status(200).json({
-    success: true,
-    data: user,
   });
 });
