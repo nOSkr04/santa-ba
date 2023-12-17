@@ -2,10 +2,7 @@ import mongoose from "mongoose";
 
 const GiftUserSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.ObjectId,
-      ref: "User",
-    },
+    phone: [String],
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

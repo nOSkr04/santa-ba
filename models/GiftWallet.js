@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-const WalletSchema = new mongoose.Schema(
+const GiftWalletSchema = new mongoose.Schema(
   {
     createUser: {
       type: mongoose.Schema.ObjectId,
-      ref: "User",
+      ref: "Cv",
     },
     invoiceId: {
       type: String,
@@ -12,10 +12,6 @@ const WalletSchema = new mongoose.Schema(
     qrImage: {
       type: String,
       default: null,
-    },
-    isGift: {
-      type: Boolean,
-      default: false,
     },
     urls: [
       {
@@ -29,4 +25,4 @@ const WalletSchema = new mongoose.Schema(
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
-export default mongoose.model("Wallet", WalletSchema);
+export default mongoose.model("GiftWallet", GiftWalletSchema);

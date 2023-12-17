@@ -2,12 +2,7 @@ import mongoose from "mongoose";
 
 const AllEggSchema = new mongoose.Schema(
   {
-    users: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "User",
-      },
-    ],
+    phone: [String],
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

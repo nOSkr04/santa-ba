@@ -2,6 +2,7 @@ import Gift from "../models/Gift.js";
 import MyError from "../utils/myError.js";
 import asyncHandler from "express-async-handler";
 import paginate from "../utils/paginate.js";
+import User from "../models/User.js";
 // api/v1/gifts
 export const getGifts = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
@@ -9,7 +10,7 @@ export const getGifts = asyncHandler(async (req, res, next) => {
   const sort = req.query.sort;
   const select = req.query.select;
 
-  ["select", "sort", "page", "limit"].forEach((el) => delete req.query[el]);
+  [("select", "sort", "page", "limit")].forEach((el) => delete req.query[el]);
 
   const pagination = await paginate(page, limit, Gift);
 
