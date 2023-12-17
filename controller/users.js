@@ -371,7 +371,7 @@ export const chargeTime = asyncHandler(async (req, res, next) => {
     `${eggCount} өндөг амжилттай авлаа`
   );
   await Notification.create({
-    title,
+    title: `${eggCount} өндөг амжилттай авлаа`,
     users: profile._id,
   });
   await User.updateOne({ _id: _id }, { $inc: { notificationCount: 1 } });
@@ -516,6 +516,7 @@ export const chargeGift = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ phone: phone });
   const price = parseInt(numId, 10);
   const eggCount = price / 100;
+  console.log(user);
   if (user) {
     await sendNotification(
       user.expoPushToken,
@@ -528,6 +529,7 @@ export const chargeGift = asyncHandler(async (req, res, next) => {
     });
     await User.updateOne({ _id: _id }, { $inc: { notificationCount: 1 } });
     user.save();
+    console.log("done");
   } else {
     await GiftUser.create({ phone: phone });
     await AllEgg.create({ phone: phone });
