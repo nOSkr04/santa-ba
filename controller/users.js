@@ -374,7 +374,10 @@ export const chargeTime = asyncHandler(async (req, res, next) => {
     title: `${eggCount} өндөг амжилттай авлаа`,
     users: profile._id,
   });
-  await User.updateOne({ _id: _id }, { $inc: { notificationCount: 1 } });
+  await User.updateOne(
+    { _id: profile._id },
+    { $inc: { notificationCount: 1 } }
+  );
   await AllEgg.create({ phone: profile.phone });
   profile.save();
 
