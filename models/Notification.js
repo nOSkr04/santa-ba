@@ -9,6 +9,10 @@ const NotificationSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
 
     users: {
       type: mongoose.Schema.ObjectId,

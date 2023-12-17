@@ -2,7 +2,6 @@ import User from "../models/User.js";
 import MyError from "../utils/myError.js";
 import asyncHandler from "express-async-handler";
 import paginate from "../utils/paginate.js";
-import sendAllUserNotification from "../utils/sendAllUserNotification.js";
 import Wallet from "../models/Wallet.js";
 import sendNotification from "../utils/sendNotification.js";
 import axios from "axios";

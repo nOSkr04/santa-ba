@@ -11,7 +11,7 @@ export const getGifts = asyncHandler(async (req, res, next) => {
 
   ["select", "sort", "page", "limit"].forEach((el) => delete req.query[el]);
 
-  const pagination = await paginate(page, limit, Gift.find(req.query));
+  const pagination = await paginate(page, limit, Gift);
 
   const gifts = await Gift.find(req.query, select)
     .sort(sort)

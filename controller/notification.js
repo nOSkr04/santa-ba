@@ -27,6 +27,14 @@ export const getNotification = asyncHandler(async (req, res, next) => {
     .skip(pagination.start - 1)
     .limit(limit);
 
+  await Notification.updateMany(
+    { users: user._id },
+    { $set: { isRead: true } }
+  );
+
+  user.notificationCount = 0;
+  user.save();
+
   res.status(200).json({
     success: true,
     data: notifications,
