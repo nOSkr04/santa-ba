@@ -26,6 +26,7 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  giftedUsers: [String],
   type: String,
   invoiceId: String,
   expoPushToken: String,

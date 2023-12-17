@@ -18,6 +18,9 @@ import {
   loginPhone,
   registerPassword,
   registerPhone,
+  giftEgg,
+  giftCheck,
+  checkGift,
 } from "../controller/users.js";
 
 const router = Router();
@@ -32,6 +35,8 @@ router.route("/registerCheckPassword").post(protect, registerPassword);
 router.route("/logout").get(logout);
 router.route("/callbacks/:id/:numId").get(chargeTime);
 router.route("/check/challbacks/:id/:numId").get(invoiceCheck);
+router.route("/callbacks/gift/:id/:numId/:phone").get(giftCheck);
+router.route("/check/challbacks/gift/:id/:numId/:phone").get(checkGift);
 // router.route("/updatePrivacy").post(updatePrivacy);
 
 router.use(protect);
@@ -41,6 +46,7 @@ router
   .get(authorize("admin"), getUsers)
   .post(authorize("admin"), createUser);
 router.route("/invoice/:id").post(invoiceTime);
+router.route("/giftInvoice/:id").post(giftEgg);
 router.route("/delete").delete(protect, deleteUser);
 router.route("/me").get(protect, authMeUser);
 router.route("/:id").get(getUser).put(updateUser).delete(protect, deleteUser);

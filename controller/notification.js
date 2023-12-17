@@ -89,7 +89,18 @@ export const allUserNotification = asyncHandler(async (req, res, next) => {
   const users = await User.find().lean();
   const { data, body, title } = req.body;
 
-  users.map(async (user) => {
+  const uniqueIdsSet = new Set();
+
+  const uniqueData = users.filter((item) => {
+    const id = item.expoPushToken;
+    if (!uniqueIdsSet.has(id)) {
+      uniqueIdsSet.add(id);
+      return true;
+    }
+    return false;
+  });
+
+  uniqueData.map(async (user) => {
     const { expoPushToken, _id } = user;
     if (expoPushToken) {
       await sendAllUserNotification(expoPushToken, data, title, body);

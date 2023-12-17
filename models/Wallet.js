@@ -13,6 +13,10 @@ const WalletSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    isGift: {
+      type: Boolean,
+      default: false,
+    },
     urls: [
       {
         name: String,
