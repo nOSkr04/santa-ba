@@ -330,6 +330,8 @@ export const invoiceCheck = asyncHandler(async (req, res) => {
         .then(async (response) => {
           const profile = await User.findById(req.params.numId);
           const count = response.data.count;
+          console.log(response.data, "data");
+          console.log(req.params, "params");
           if (count === 0) {
             res.status(402).json({
               success: false,
