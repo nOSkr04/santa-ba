@@ -35,6 +35,43 @@ export const register = asyncHandler(async (req, res, next) => {
   });
 });
 
+export const findPhone = asyncHandler(async (req, res) => {
+  const { phone } = req.params;
+  if (!phone) {
+    throw new MyError("Утасны дугаараа оруулна уу", 400);
+  }
+
+  const user = await User.findOne({ phone });
+  res.status(200).json({
+    status: user ? true : false,
+  });
+});
+
+export const findPhoneByGift = asyncHandler(async (req, res) => {
+  const { phone, egg, message } = req.body;
+  if (!phone) {
+    throw new MyError("Утасны дугаараа оруулна уу", 400);
+  }
+  const me = await User.findById(req.userId);
+  const user = await User.findOne({ phone });
+
+  if (!egg) {
+    throw new MyError("Өндөг заавал оруулна уу", 400);
+  }
+
+  await sendNotification(user.expoPushToken, `${me.phone} - ${message}`);
+
+  user.eggCount = user.eggCount + egg;
+  me.eggCount = me.eggCount - egg;
+  user.save();
+  me.save();
+
+  res.status(200).json({
+    status: true,
+    data: user,
+  });
+});
+
 export const registerPhone = asyncHandler(async (req, res) => {
   const { phone, expoPushToken } = req.body;
   if (!phone) {

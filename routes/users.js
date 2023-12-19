@@ -21,6 +21,8 @@ import {
   chargeGift,
   invoiceGiftCheck,
   invoiceGift,
+  findPhone,
+  findPhoneByGift,
 } from "../controller/users.js";
 
 const router = Router();
@@ -45,6 +47,8 @@ router
   .route("/")
   .get(authorize("admin"), getUsers)
   .post(authorize("admin"), createUser);
+router.route("/find/:phone").get(protect, findPhone);
+router.route("/giftUser").post(protect, findPhoneByGift);
 router.route("/invoice/:id").post(invoiceTime);
 router.route("/giftInvoice/:id").post(invoiceGift);
 router.route("/delete").delete(protect, deleteUser);
