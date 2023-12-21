@@ -301,7 +301,7 @@ export const invoiceTime = asyncHandler(async (req, res, next) => {
     method: "post",
     url: "https://merchant.qpay.mn/v2/auth/token",
     headers: {
-      Authorization: `Basic U0VEVTowYjRrNDJsRA==`,
+      Authorization: `Basic U0FOVEFfTU46Z3F2SWlKSnI=`,
     },
   })
     .then((response) => {
@@ -348,7 +348,7 @@ export const invoiceCheck = asyncHandler(async (req, res) => {
     method: "post",
     url: "https://merchant.qpay.mn/v2/auth/token",
     headers: {
-      Authorization: `Basic U0VEVTowYjRrNDJsRA==`,
+      Authorization: `Basic U0FOVEFfTU46Z3F2SWlKSnI=`,
     },
   })
     .then((response) => {
@@ -459,7 +459,7 @@ export const invoiceGift = asyncHandler(async (req, res, next) => {
     method: "post",
     url: "https://merchant.qpay.mn/v2/auth/token",
     headers: {
-      Authorization: `Basic U0VEVTowYjRrNDJsRA==`,
+      Authorization: `Basic U0FOVEFfTU46Z3F2SWlKSnI=`,
     },
   })
     .then((response) => {
@@ -508,7 +508,7 @@ export const invoiceGiftCheck = asyncHandler(async (req, res) => {
     method: "post",
     url: "https://merchant.qpay.mn/v2/auth/token",
     headers: {
-      Authorization: `Basic U0VEVTowYjRrNDJsRA==`,
+      Authorization: `Basic U0FOVEFfTU46Z3F2SWlKSnI=`,
     },
   })
     .then((response) => {
