@@ -314,7 +314,7 @@ export const invoiceTime = asyncHandler(async (req, res, next) => {
           Authorization: `Bearer ${token}`,
         },
         data: {
-          invoice_code: "SEDU_INVOICE",
+          invoice_code: "SANTA_MN_INVOICE",
           sender_invoice_no: "12345678",
           invoice_receiver_code: `${profile.phone}`,
           invoice_description: `Santa egg ${profile.phone}`,
@@ -472,7 +472,7 @@ export const invoiceGift = asyncHandler(async (req, res, next) => {
           Authorization: `Bearer ${token}`,
         },
         data: {
-          invoice_code: "SEDU_INVOICE",
+          invoice_code: "SANTA_MN_INVOICE",
           sender_invoice_no: "12345678",
           invoice_receiver_code: `${profile.phone}`,
           invoice_description: `Santa egg ${profile.phone} аас ${phone} бэлэглэв`,
