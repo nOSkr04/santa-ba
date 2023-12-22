@@ -59,7 +59,13 @@ export const findPhoneByGift = asyncHandler(async (req, res) => {
     throw new MyError("Өндөг заавал оруулна уу", 400);
   }
 
-  await sendNotification(user.expoPushToken, `${me.phone} - ${message}`);
+  if (user) {
+    await sendNotification(user.expoPushToken, `${me.phone} - ${message}`);
+    await Notification.create({
+      title: `${me.phone} хэрэглэгчээс танд ${egg} өндөг бэлэглэлээ`,
+      users: user._id,
+    });
+  }
 
   user.eggCount = user.eggCount + egg;
   me.eggCount = me.eggCount - egg;
@@ -583,6 +589,10 @@ export const chargeGift = asyncHandler(async (req, res, next) => {
     await GiftUser.create({ phone: phone });
     eggArray.map(async () => {
       await AllEgg.create({ phone: phone });
+    });
+    await Notification.create({
+      title: `${profile.phone} хэрэглэгчээс танд ${eggCount} өндөг бэлэглэлээ`,
+      users: user._id, // Link the notification to the user
     });
   }
 
