@@ -74,6 +74,7 @@ export const findPhoneByGift = asyncHandler(async (req, res) => {
 
 export const registerPhone = asyncHandler(async (req, res) => {
   const { phone, expoPushToken } = req.body;
+
   if (!phone) {
     throw new MyError("Утасны дугаараа оруулна уу", 400);
   }
@@ -82,10 +83,13 @@ export const registerPhone = asyncHandler(async (req, res) => {
   if (user) {
     throw new MyError("Бүртгэлтэй утасны дугаар байна", 400);
   }
+  const allEgg = await AllEgg.find({ phone: phone });
+
   const newUser = await User.create({
     phone,
     expoPushToken,
     type: "CHECK_PHONE_REGISTER",
+    eggCount: allEgg.length,
   });
   const token = newUser.getJsonWebToken();
 
@@ -403,6 +407,7 @@ export const chargeTime = asyncHandler(async (req, res, next) => {
   const price = parseInt(req.params.numId, 10);
   const eggCount = price / 100;
   profile.eggCount = profile.eggCount + eggCount;
+  const eggArray = new Array(eggCount).fill(eggCount);
   await sendNotification(
     profile.expoPushToken,
     `${eggCount} өндөг амжилттай авлаа`
@@ -415,7 +420,9 @@ export const chargeTime = asyncHandler(async (req, res, next) => {
     { _id: profile._id },
     { $inc: { notificationCount: 1 } }
   );
-  await AllEgg.create({ phone: profile.phone });
+  eggArray.map(async () => {
+    await AllEgg.create({ phone: profile.phone });
+  });
   profile.save();
 
   res.status(200).json({
@@ -556,6 +563,7 @@ export const chargeGift = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ phone: phone });
   const price = parseInt(numId, 10);
   const eggCount = price / 100;
+  const eggArray = new Array(eggCount).fill(eggCount);
   if (user) {
     await sendNotification(
       user.expoPushToken,
@@ -567,11 +575,15 @@ export const chargeGift = asyncHandler(async (req, res, next) => {
       users: user._id, // Link the notification to the user
     });
     await User.updateOne({ _id: user._id }, { $inc: { notificationCount: 1 } });
-    await AllEgg.create({ phone: user.phone });
+    eggArray.map(async () => {
+      await AllEgg.create({ phone: user.phone });
+    });
     user.save();
   } else {
     await GiftUser.create({ phone: phone });
-    await AllEgg.create({ phone: phone });
+    eggArray.map(async () => {
+      await AllEgg.create({ phone: phone });
+    });
   }
 
   profile.giftedUsers = [
