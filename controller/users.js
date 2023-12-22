@@ -65,11 +65,16 @@ export const findPhoneByGift = asyncHandler(async (req, res) => {
       title: `${me.phone} хэрэглэгчээс танд ${egg} өндөг бэлэглэлээ`,
       users: user._id,
     });
+    user.eggCount = user.eggCount + egg;
+    user.save();
+  } else {
+    const eggArray = new Array(egg).fill(egg);
+    eggArray.map(async () => {
+      await AllEgg.create({ phone: phone });
+    });
   }
 
-  user.eggCount = user.eggCount + egg;
   me.eggCount = me.eggCount - egg;
-  user.save();
   me.save();
 
   res.status(200).json({
