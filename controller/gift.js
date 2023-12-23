@@ -6,7 +6,7 @@ import User from "../models/User.js";
 // api/v1/gifts
 export const getGifts = asyncHandler(async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
-  const limit = 30;
+  const limit = 50;
   // const limit = parseInt(req.query.limit) || 30;
   const sort = req.query.sort;
   const select = req.query.select;
