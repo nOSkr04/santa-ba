@@ -416,7 +416,7 @@ export const invoiceCheck = asyncHandler(async (req, res) => {
 export const chargeTime = asyncHandler(async (req, res, next) => {
   const profile = await User.findById(req.params.id);
   const price = parseInt(req.params.numId, 10);
-  const eggCount = price / 100;
+  const eggCount = price / 20000;
   profile.eggCount = profile.eggCount + eggCount;
   const eggArray = new Array(eggCount).fill(eggCount);
   await sendNotification(
@@ -573,7 +573,7 @@ export const chargeGift = asyncHandler(async (req, res, next) => {
   const profile = await User.findById(id);
   const user = await User.findOne({ phone: phone });
   const price = parseInt(numId, 10);
-  const eggCount = price / 100;
+  const eggCount = price / 20000;
   const eggArray = new Array(eggCount).fill(eggCount);
   if (user) {
     await sendNotification(
